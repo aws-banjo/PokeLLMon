@@ -2,19 +2,19 @@
 
 This is the implementation for the paper "PokéLLMon: A Human-Parity Agent for Pokémon battles with Large Language Models."
 
+This has been updated to include llm vs llm battles using [Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/service_code_examples.html?trk=318ae7c3-5198-49c8-9abe-4022ae923d8b&sc_channel=el)
+
 
 <div align="center">
   <img src="./resource/LLM_attrition_strategy.gif" alt="PokemonBattle">
 </div>
 
 
-The documentation will be fully updated within 3 days.
-
 ## Requirements:
 
 ```sh
 python >= 3.8
-openai >= 1.7.2
+pip install -r requirements.txt
 ``` 
 
 ## Configuration 
@@ -33,9 +33,10 @@ node pokemon-showdown start --no-security
 Enter "http://localhost:8000/" in your browsers.
 ``` 
 
-### Configuring OpenAI API
+### Configuring Amazon Bedrock API
 
-Get GPT-4 API from https://platform.openai.com/account/api-keys
+* [Model Access in Amazon Bedrock](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess) 
+* [Details here](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html)
 
 ### Configuring Players
 
@@ -54,6 +55,13 @@ player = Player(account_configuration=my_account_config, server_configuration=Sh
 ``` 
 
 ## Let's Play Pokémon Battles!! 
+
+
+### LLM vs LLM battles
+
+```sh
+python llm_vs_llm.py # Pick which models to use line 48 and 81
+``` 
 
 ### Battle Against the Heuristic Bot Locally
 ```sh
