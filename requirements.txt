@@ -1,5 +1,4 @@
 boto3
 numpy
-anthropic
 tqdm
 orjson

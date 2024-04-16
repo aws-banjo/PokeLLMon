@@ -4,7 +4,6 @@ import random
 import time
 from typing import Dict, List, Optional, Union
 
-import anthropic
 import boto3
 
 from poke_env.data.gen_data import GenData
@@ -20,8 +19,6 @@ bedrock_runtime = boto3.client(
     service_name="bedrock-runtime",
     region_name="us-east-1",
 )
-
-opus_client = anthropic.Anthropic()
 
 
 def calculate_move_type_damage_multipier(
@@ -1058,7 +1055,6 @@ If your previous move was a switch think long and hard before saying to switch a
                     next_action = self.parse(llm_output, battle)
                     print("Next action:", next_action)
 
-
                     with open(f"{self.log_dir}/output.jsonl", "a") as f:
                         f.write(
                             json.dumps(
@@ -1470,6 +1466,37 @@ def claude_2_prompt_format(prompt: str) -> str:
 
 
 # Call Claude model
+def call_claude_3_opus(system_prompt, prompt, bedrock_runtime):
+
+    prompt_config = {
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 4096,
+        "system": system_prompt,
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ],
+    }
+
+    body = json.dumps(prompt_config)
+
+    modelId = "anthropic.claude-3-opus-20240229-v1:0"
+    accept = "application/json"
+    contentType = "application/json"
+
+    response = bedrock_runtime.invoke_model(
+        body=body, modelId=modelId, accept=accept, contentType=contentType
+    )
+    response_body = json.loads(response.get("body").read())
+
+    results = response_body.get("content")[0].get("text")
+    return results
+
+
 def call_claude_3_sonnet(system_prompt, prompt, bedrock_runtime):
 
     prompt_config = {
@@ -1530,19 +1557,6 @@ def call_claude_3_haiku(system_prompt, prompt, bedrock_runtime):
 
     results = response_body.get("content")[0].get("text")
     return results
-
-# No opus in Bedrock yet...
-def call_claude_3_opus(system_prompt, prompt, bedrock_runtime):
-
-    message = opus_client.messages.create(
-        model="claude-3-opus-20240229",
-        max_tokens=4096,
-        system=system_prompt,
-        temperature=0.7,
-        messages=[{"role": "user", "content": prompt}],
-    )
-
-    return message.content[0].text
 
 
 # Call Claude model
@@ -1666,6 +1680,7 @@ def call_cohere_light(system_prompt, prompt, bedrock_runtime):
 
     results = response_body.get("generations")[0].get("text")
     return results
+
 
 # Call Titan model
 def call_titan_express(system_prompt, prompt, bedrock_runtime):
